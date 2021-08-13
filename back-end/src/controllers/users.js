@@ -39,6 +39,26 @@ const createUser = async (req, res) => {
   }
 }
 
+const loginUser = async (req, res) => {
+  const {
+    email,
+    senha
+  } = req.body;
+
+
+}
+
+const viewProfile = async (req, res) => {
+
+}
+
+const updateProfile = async (req, res) => {
+
+}
+
 module.exports = {
-  createUser
+  createUser,
+  loginUser,
+  viewProfile,
+  updateProfile
 };
