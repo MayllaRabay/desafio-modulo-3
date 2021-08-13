@@ -9,7 +9,7 @@ routes.post('/login', users.loginUser);
 routes.get('/perfil', users.viewProfile);
 routes.put('/perfil', users.updateProfile);
 
-routes.get('/produtos', products.listProduct);
+routes.get('/produtos', products.listAllProducts);
 routes.get('/produtos/:id', products.listProductId);
 routes.post('/produtos', products.createProduct);
 routes.put('/produtos/:id', products.updateProduct);
