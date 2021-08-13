@@ -49,6 +49,22 @@ const loginUser = async (req, res) => {
 }
 
 const viewProfile = async (req, res) => {
+  const { infoUser } = req;
+
+  try {
+    const query = `
+      SELECT *
+      FROM usuarios
+      WHERE id = $1;
+    `
+    const { rows : user } = await connection.query(query, [1]);
+    const { senha, ...profile} = user[0];
+
+    return res.status(200).json(profile);
+    
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
 
 }
 
