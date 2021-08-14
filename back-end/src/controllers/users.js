@@ -2,6 +2,8 @@ const connection = require('../connection');
 const handleUsers = require('../utils/handleUsers');
 const securePassword = require('secure-password');
 const pwd = securePassword();
+const jwt = require('jsonwebtoken');
+const jwtSecret = require('../jwt_secret');
 
 const createUser = async (req, res) => {
   const { 
@@ -116,8 +118,22 @@ const loginUser = async (req, res) => {
         }
       break;
     }
+    
+    const token = jwt.sign({
+      id: user.id,
+      nome: user.nome, 
+      nome_loja: user.nome_loja,
+      email: user.email
+    }, jwtSecret);
 
-    return res.status(200).json(`Bem-vindo ${user.nome}!`);
+    const usuario = {
+      id: user.id,
+      nome: user.nome, 
+      nome_loja: user.nome_loja,
+      email: user.email
+    };
+
+    return res.status(200).json({usuario, token});
 
   } catch (error) {
     return res.status(400).json(error.message);
