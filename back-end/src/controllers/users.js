@@ -164,6 +164,12 @@ const updateProfile = async (req, res) => {
     senha
   } = req.body;
 
+  const error = handleUsers(nome, nome_loja, email, senha);
+
+  if(error) {
+    return res.status(400).json(error);
+  }
+
   try {
     const queryEmail = `
       SELECT *
@@ -177,6 +183,10 @@ const updateProfile = async (req, res) => {
       return res.status(400).json('Não foi possível atualizar seu perfil. O e-mail informado já está cadastrado.');
     }
 
+    const userPassword = Buffer.from(senha);
+
+    const hash = (await pwd.hash(userPassword)).toString('hex');
+
     const query = `
       UPDATE usuarios
       SET nome = $1,
@@ -189,7 +199,7 @@ const updateProfile = async (req, res) => {
       nome,
       nome_loja,
       email,
-      senha,
+      hash,
       infoUser.id
     ]);
 
