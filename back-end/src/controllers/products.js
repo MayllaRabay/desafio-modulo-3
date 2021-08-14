@@ -156,7 +156,40 @@ const updateProduct = async (req, res) => {
 }
 
 const deleteProduct = async (req, res) => {
+  const { infoUser } = req;
+  const { id } = req.params;
 
+  try {
+    const queryProduct = `
+      SELECT *
+      FROM produtos
+      WHERE usuario_id = $1
+      AND id = $2;
+    `
+
+    const checkProduct = await connection.query(queryProduct, [infoUser.id, id]);
+
+    if(checkProduct.rowCount === 0) {
+      return res.status(400).json(`Desculpe, produto com id ${id} não encontrado!`);
+    }
+
+    const query = `
+      DELETE FROM produtos
+      WHERE usuario_id = $1
+      AND id = $2;
+    `
+
+    const deletedProduct = await connection.query(query, [infoUser.id, id]);
+
+    if(deletedProduct.rowCount === 0) {
+      return res.status(400).json(`Desculpe, não foi possível excluir o produto com id ${id}, tente novamente!`);
+    }
+
+    return res.status(200).json('Produto excluído com sucesso!');
+
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
 }
 
 module.exports = {
