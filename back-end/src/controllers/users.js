@@ -1,5 +1,7 @@
 const connection = require('../connection');
 const handleUsers = require('../utils/handleUsers');
+const securePassword = require('secure-password');
+const pwd = securePassword();
 
 const createUser = async (req, res) => {
   const { 
@@ -27,6 +29,10 @@ const createUser = async (req, res) => {
       return res.status(400).json('O e-mail informado já está cadastrado.');
     }
 
+    const userPassword = Buffer.from(senha);
+
+    const hash = (await pwd.hash(userPassword)).toString('hex');
+
     const query = `
       INSERT INTO usuarios ( 
         nome, 
@@ -44,8 +50,8 @@ const createUser = async (req, res) => {
     const user = await connection.query(query, [
       nome, 
       nome_loja, 
-      email, 
-      senha
+      email,
+      hash
     ]);
 
     if (user.rowCount === 0) {
