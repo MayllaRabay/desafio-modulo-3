@@ -1,5 +1,5 @@
 const connection = require('../connection');
-const { handleProducts, validateSearchedProduct } = require('../utils/handleProducts');
+const { handleProducts, handleSearchedProducts } = require('../utils/handleProducts');
 
 const listAllProducts = async (req, res) => {
   const { infoUser } = req;
@@ -19,7 +19,7 @@ const listAllProducts = async (req, res) => {
       const searchedProducts = await connection.query(queryCategory, [infoUser.id, category]);
 
       if(searchedProducts.rowCount === 0) {
-        return res.status(404).json(`Nenhum produto da categoria ${categoria} foi encontrado.`);
+        return res.status(404).json(`Nenhum produto da categoria ${category} foi encontrado.`);
       }
 
       return res.status(200).json(searchedProducts.rows);
@@ -164,20 +164,19 @@ const updateProduct = async (req, res) => {
     imagem
   } = req.body;
 
+  const error = handleProducts(nome, estoque, preco, descricao);
+
+  if(error) {
+    return res.status(400).json(error);
+  }
+
+  const secondError = await handleSearchedProducts(infoUser, id);
+
+  if(secondError) {
+    return res.status(404).json(secondError);
+  }
+
   try {
-    const queryProduct = `
-      SELECT *
-      FROM produtos
-      WHERE usuario_id = $1
-      AND id = $2;
-    `
-    
-    const checkProduct = await connection.query(queryProduct, [infoUser.id, id]);
-
-    if(checkProduct.rowCount === 0) {
-      return res.status(400).json(`Desculpe, produto com id ${id} não encontrado!`);
-    }
-
     const query = `
       UPDATE produtos
       SET nome = $1,
@@ -212,20 +211,13 @@ const deleteProduct = async (req, res) => {
   const { infoUser } = req;
   const { id } = req.params;
 
+  const error = await handleSearchedProducts(infoUser, id);
+
+  if(error) {
+    return res.status(404).json(error);
+  }
+
   try {
-    const queryProduct = `
-      SELECT *
-      FROM produtos
-      WHERE usuario_id = $1
-      AND id = $2;
-    `
-
-    const checkProduct = await connection.query(queryProduct, [infoUser.id, id]);
-
-    if(checkProduct.rowCount === 0) {
-      return res.status(400).json(`Desculpe, produto com id ${id} não encontrado!`);
-    }
-
     const query = `
       DELETE FROM produtos
       WHERE usuario_id = $1
