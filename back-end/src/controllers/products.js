@@ -2,8 +2,53 @@ const connection = require('../connection');
 
 const listAllProducts = async (req, res) => {
   const { infoUser } = req;
+  const category = req.query.categoria;
+  const minPrice = Number(req.query.precoMinimo);
+  const maxPrice = Number(req.query.precoMaximo);
 
   try {
+    if(category) {
+      const queryCategory = `
+        SELECT *
+        FROM produtos
+        WHERE usuario_id = $1
+        AND categoria = $2;
+      `
+
+      const searchedProducts = await connection.query(queryCategory, [infoUser.id, category]);
+
+      if(searchedProducts.rowCount === 0) {
+        return res.status(404).json(`Nenhum produto da categoria ${categoria} foi encontrado.`);
+      }
+
+      return res.status(200).json(searchedProducts.rows);
+    }
+
+    if((minPrice && !maxPrice) || (!minPrice && maxPrice)) {
+      return res.status(400).json('Por favor informe um preço mínimo e um preço máximo válidos.');
+    }
+
+    if(minPrice > maxPrice) {
+      return res.status(400).json('O preço mínimo precisa ser menor que o preço máximo.');
+    }
+
+    if(minPrice && maxPrice) {
+      const queryPrice = `
+        SELECT *
+        FROM produtos
+        WHERE usuario_id = $1
+        AND preco/100 BETWEEN $2 AND $3;
+      `
+
+      const searchedProducts = await connection.query(queryPrice, [infoUser.id, minPrice, maxPrice]);
+
+      if(searchedProducts.rowCount === 0) {
+        return res.status(404).json('Nenhum produto nessa faixa de preço foi encontrado.');
+      }
+
+      return res.status(200).json(searchedProducts.rows);
+    }
+
     const query = `
       SELECT * 
       FROM produtos 
