@@ -1,4 +1,5 @@
 const connection = require('../connection');
+const handleProducts = require('../utils/handleProducts');
 
 const listAllProducts = async (req, res) => {
   const { infoUser } = req;
@@ -102,6 +103,12 @@ const createProduct = async (req, res) => {
     descricao,
     imagem
   } = req.body;
+
+  const error = handleProducts(nome, estoque, preco, descricao);
+
+  if(error) {
+    return res.status(400).json(error);
+  }
 
   try {
     const query = `

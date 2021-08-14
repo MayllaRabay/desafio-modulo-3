@@ -1,4 +1,5 @@
 const connection = require('../connection');
+const handleUsers = require('../utils/handleUsers');
 
 const createUser = async (req, res) => {
   const { 
@@ -8,7 +9,24 @@ const createUser = async (req, res) => {
     senha 
   } = req.body;
 
+  const error = handleUsers(nome, nome_loja, email, senha);
+
+  if(error) {
+    return res.status(400).json(error);
+  }
+
   try {
+    const queryEmail = `
+      SELECT *
+      FROM usuarios
+      WHERE email = $1
+    `
+    const checkDuplicateEmail = await connection.query(queryEmail, [email]);
+
+    if(checkDuplicateEmail.rowCount > 0) {
+      return res.status(400).json('O e-mail informado já está cadastrado.');
+    }
+
     const query = `
       INSERT INTO usuarios ( 
         nome, 
