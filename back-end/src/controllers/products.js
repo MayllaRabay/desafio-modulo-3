@@ -1,5 +1,5 @@
 const connection = require('../connection');
-const handleProducts = require('../utils/handleProducts');
+const { handleProducts, validateSearchedProduct } = require('../utils/handleProducts');
 
 const listAllProducts = async (req, res) => {
   const { infoUser } = req;
@@ -171,10 +171,11 @@ const updateProduct = async (req, res) => {
       WHERE usuario_id = $1
       AND id = $2;
     `
+    
     const checkProduct = await connection.query(queryProduct, [infoUser.id, id]);
 
     if(checkProduct.rowCount === 0) {
-      return res.status(404).json(`Desculpe, produto com id ${id} não encontrado!`);
+      return res.status(400).json(`Desculpe, produto com id ${id} não encontrado!`);
     }
 
     const query = `
