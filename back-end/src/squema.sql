@@ -1,6 +1,6 @@
 CREATE DATABASE market_cubos;
 
-CREATE TABLE usuarios (
+CREATE TABLE IF NOT EXISTS usuarios (
   id SERIAL PRIMARY KEY,
   nome TEXT NOT NULL,
   nome_loja TEXT NOT NULL,
@@ -8,7 +8,7 @@ CREATE TABLE usuarios (
   senha TEXT NOT NULL
 );
 
-CREATE TABLE produtos (
+CREATE TABLE IF NOT EXISTS produtos (
   id SERIAL PRIMARY KEY,
   usuario_id INTEGER NOT NULL,
   nome TEXT NOT NULL,
@@ -16,5 +16,6 @@ CREATE TABLE produtos (
   categoria TEXT,
   preco INTEGER NOT NULL,
   descricao TEXT NOT NULL,
-  imagem TEXT
+  imagem TEXT,
+  FOREIGN KEY (usuario_id) REFERENCES usuarios (id)
 );

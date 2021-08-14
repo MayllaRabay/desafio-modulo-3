@@ -126,12 +126,7 @@ const loginUser = async (req, res) => {
       email: user.email
     }, jwtSecret);
 
-    const usuario = {
-      id: user.id,
-      nome: user.nome, 
-      nome_loja: user.nome_loja,
-      email: user.email
-    };
+    const { senha: notImportant, ...usuario } = user;
 
     return res.status(200).json({usuario, token});
 

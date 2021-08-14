@@ -1,11 +1,15 @@
 const express = require('express');
 const users = require('./controllers/users');
 const products = require('./controllers/products');
+const authToken = require('./middlewares/authToken');
 
 const routes = express();
 
 routes.post('/cadastro', users.createUser);
 routes.post('/login', users.loginUser);
+
+routes.use(authToken);
+
 routes.get('/perfil', users.viewProfile);
 routes.put('/perfil', users.updateProfile);
 
