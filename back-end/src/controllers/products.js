@@ -7,7 +7,7 @@ const listAllProducts = async (req, res) => {
     const query = `
       SELECT * 
       FROM produtos 
-      WHERE usuario_id = $1
+      WHERE usuario_id = $1;
     `
     const products = await connection.query(query, [infoUser.id]);
 
@@ -31,7 +31,7 @@ const listProductId = async (req, res) => {
       SELECT * 
       FROM produtos 
       WHERE usuario_id = $1 
-      AND id = $2
+      AND id = $2;
     `
     const product = await connection.query(query, [infoUser.id, id]);
 
@@ -92,14 +92,63 @@ const createProduct = async (req, res) => {
     }
 
     return res.status(200).json('Produto cadastrado com sucesso!');
-    
+
   } catch (error) {
     return res.status(400).json(error.message);
   }
 }
 
 const updateProduct = async (req, res) => {
+  const { infoUser } = req;
+  const { id } = req.params;
 
+  const { 
+    nome,
+    estoque,
+    preco,
+    descricao,
+    imagem
+  } = req.body;
+
+  const queryProduct = `
+    SELECT *
+    FROM produtos
+    WHERE id = 1$
+    AND usuario_id = $2;
+  `
+  const checkProduct = await connection.query(queryProduct, [id, infoUser.id]);
+
+  if(checkProduct.rowCount === 0) {
+    return res.status(404).json(`Desculpe, produto com id ${id} não encontrado!`);
+  }
+
+  try {
+    const query = `
+      UPDATE produtos
+      SET nome = $1,
+      estoque = $2,
+      preco = $3,
+      descricao = $4,
+      imagem = $5;
+    `
+
+    const product = await connection.query(query, [
+      nome,
+      estoque,
+      preco,
+      descricao,
+      imagem
+    ]);
+
+    if(product.rowCount === 0) {
+      return res.status(400).json(`Não foi possível atualizar o produto com id ${id}, tente novamente!`);
+    }
+
+    return res.status(200).json('Produto atualizado com sucesso!');
+
+  } catch (error) {
+    return res.status(400).json(error.message);
+  }
 }
 
 const deleteProduct = async (req, res) => {
