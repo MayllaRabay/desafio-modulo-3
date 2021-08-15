@@ -2,6 +2,7 @@ import { Button, Card, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import PasswordInput from '../../components/PasswordInput';
 import styles from './styles.module.scss';
 
 const useStyles = makeStyles({
@@ -27,7 +28,8 @@ const useStyles = makeStyles({
   },
 
   row: {
-    marginBottom: '2.5rem'
+    marginBottom: '2.5rem',
+    width: '14rem'
   },
 
   button: {
@@ -63,8 +65,8 @@ function Register() {
           <TextField className={materialStyles.row} label="Seu nome" {...register("nome", { required: true })} />
           <TextField className={materialStyles.row} label="Nome da loja" {...register("nome_loja", { required: true })} />
           <TextField className={materialStyles.row} label="E-mail"{...register("email", { required: true })} />
-          <TextField className={materialStyles.row} label="Senha"{...register("senha", { required: true })} />
-          <TextField className={materialStyles.row} label="Repita a senha"{...register("repitaSenha", { required: true })} />
+          <PasswordInput label="Senha" id="senha" {...register("senha", { required: true })} />
+          <PasswordInput label="Repita a senha" id="repita_senha" {...register("repitaSenha", { required: true })} />
 
           <Button className={materialStyles.button} variant="contained">
             Criar Conta
