@@ -2,7 +2,7 @@ import { Button, Card, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import PasswordInput from '../../components/PasswordInput';
+import PasswordInput from '../../components/PasswordInput/index';
 import styles from './styles.module.scss';
 
 const useStyles = makeStyles({
@@ -10,25 +10,19 @@ const useStyles = makeStyles({
     background: 'var(--color-white)',
     borderRadius: 16,
     boxShadow: '0px 8px 9px -5px rgba(0, 0, 0, 0.2), 0px 15px 22px 2px rgba(0, 0, 0, 0.14), 0px 6px 28px 5px rgba(0, 0, 0, 0.12)',
-    padding: '5rem',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    gap: '2.5rem',
+    padding: '5rem',
 
     '& h2': {
-      marginBottom: '4rem',
+      marginBottom: '3.5rem',
       textAlign: 'center'
     }
   },
 
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center'
-  },
-
   row: {
-    marginBottom: '2.5rem',
     width: '14rem'
   },
 
@@ -41,7 +35,6 @@ const useStyles = makeStyles({
 
   footer: {
     fontSize: '0.8rem',
-    margin: '1.5rem',
 
     '& a': {
       color: 'var(--color-blue)'
@@ -51,32 +44,58 @@ const useStyles = makeStyles({
 
 function Register() {
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
-  const onSubmit = data => console.log(data);
-
   const materialStyles = useStyles();
 
+  function registerUser(data) {
+    if(data.senha !== data.repita_senha) {
+      return
+    }
+  }
+
   return (
-    <div className={styles.content__wrapper}>
+    <form className={styles.content__wrapper} onSubmit={handleSubmit(registerUser)}>
       <Card className={materialStyles.card}>
         <Typography variant="h4" component="h2">
           Criar uma conta
         </Typography>
-        <form className={materialStyles.form} onSubmit={handleSubmit(onSubmit)}>
-          <TextField className={materialStyles.row} label="Seu nome" {...register("nome", { required: true })} />
-          <TextField className={materialStyles.row} label="Nome da loja" {...register("nome_loja", { required: true })} />
-          <TextField className={materialStyles.row} label="E-mail"{...register("email", { required: true })} />
-          <PasswordInput label="Senha" id="senha" {...register("senha", { required: true })} />
-          <PasswordInput label="Repita a senha" id="repita_senha" {...register("repitaSenha", { required: true })} />
-
-          <Button className={materialStyles.button} variant="contained">
-            Criar Conta
-          </Button>
-        </form>
+        <TextField 
+          className={materialStyles.row} 
+          label="Seu nome" 
+          {...register("nome", { required: true })}
+          error={!!errors.nome} // === {errors.nome ? true : false}
+        />
+        <TextField 
+          className={materialStyles.row} 
+          label="Nome da loja" 
+          {...register("nome_loja", { required: true })}
+          error={!!errors.nome_loja}
+        />
+        <TextField 
+          className={materialStyles.row} 
+          label="E-mail"
+          {...register("email", { required: true })}
+          error={!!errors.email}
+        />
+        <PasswordInput 
+          label="Senha" 
+          id="senha" 
+          register={() => register("senha", { required: true })}
+          error={!!errors.senha}
+        />
+        <PasswordInput 
+          label="Repita a senha" 
+          id="repita_senha" 
+          register={() => register("repita_senha", { required: true })}
+          error={!!errors.repita_senha}
+        />
+        <Button type="submit" className={materialStyles.button} variant="contained">
+          Criar Conta
+        </Button>
         <Typography className={materialStyles.footer}>
           Já possui uma conta? <a href='/'>ACESSE</a>
         </Typography>
       </Card>
-    </div>
+    </form>
   );
 }
 
