@@ -1,11 +1,11 @@
 import './styles.css';
 
-function App() {
+function Login() {
   return (
-    <div>
-      Olá, mundo!
-    </div>
+    <>
+      <h1>Login</h1>
+    </>
   );
 }
 
-export default App;
+export default Login;
