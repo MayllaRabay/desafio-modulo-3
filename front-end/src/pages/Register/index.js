@@ -1,4 +1,4 @@
-import { Card } from '@material-ui/core';
+import { Button, Card, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
@@ -6,10 +6,44 @@ import styles from './styles.module.scss';
 
 const useStyles = makeStyles({
   card: {
-    background: '--color-white',
+    background: 'var(--color-white)',
     borderRadius: 16,
     boxShadow: '0px 8px 9px -5px rgba(0, 0, 0, 0.2), 0px 15px 22px 2px rgba(0, 0, 0, 0.14), 0px 6px 28px 5px rgba(0, 0, 0, 0.12)',
-    padding: '5rem'
+    padding: '5rem',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+
+    '& h2': {
+      marginBottom: '4rem',
+      textAlign: 'center'
+    }
+  },
+
+  form: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+
+  row: {
+    marginBottom: '2.5rem'
+  },
+
+  button: {
+    backgroundColor: 'var(--color-blue)',
+    color: 'var(--color-white)',
+    marginTop: '1rem',
+    width: 'fit-content'
+  },
+
+  footer: {
+    fontSize: '0.8rem',
+    margin: '1.5rem',
+
+    '& a': {
+      color: 'var(--color-blue)'
+    }
   }
 });
 
@@ -22,11 +56,23 @@ function Register() {
   return (
     <div className={styles.content__wrapper}>
       <Card className={materialStyles.card}>
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <input placeholder="Seu nome" {...register("nome", { required: true })} />
-          <input placeholder="Noda da loja"{...register("exampleRequired", { required: true })} />
-          <input type="submit" />
+        <Typography variant="h4" component="h2">
+          Criar uma conta
+        </Typography>
+        <form className={materialStyles.form} onSubmit={handleSubmit(onSubmit)}>
+          <TextField className={materialStyles.row} label="Seu nome" {...register("nome", { required: true })} />
+          <TextField className={materialStyles.row} label="Nome da loja" {...register("nome_loja", { required: true })} />
+          <TextField className={materialStyles.row} label="E-mail"{...register("email", { required: true })} />
+          <TextField className={materialStyles.row} label="Senha"{...register("senha", { required: true })} />
+          <TextField className={materialStyles.row} label="Repita a senha"{...register("repitaSenha", { required: true })} />
+
+          <Button className={materialStyles.button} variant="contained">
+            Criar Conta
+          </Button>
         </form>
+        <Typography className={materialStyles.footer}>
+          Já possui uma conta? <a href='/'>ACESSE</a>
+        </Typography>
       </Card>
     </div>
   );
