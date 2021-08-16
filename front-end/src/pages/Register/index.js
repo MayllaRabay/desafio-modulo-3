@@ -2,6 +2,7 @@ import { Button, Card, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import PasswordInput from '../../components/PasswordInput/index';
 import styles from './styles.module.scss';
 
@@ -43,12 +44,35 @@ const useStyles = makeStyles({
 });
 
 function Register() {
-  const { register, handleSubmit, watch, formState: { errors } } = useForm();
+  const { register, handleSubmit, watch, formState: { errors }, setError } = useForm();
   const materialStyles = useStyles();
+  const history = useHistory();
 
-  function registerUser(data) {
+  async function registerUser(data) {
     if(data.senha !== data.repita_senha) {
-      return
+      setError('senha', { type: "validate" }, { shouldFocus: true })
+      setError('repita_senha', { type: "validate" }, { shouldFocus: false })
+      return;
+    }
+
+    const body = {
+      nome: data.nome,
+      nome_loja: data.nome_loja,
+      email: data.email,
+      senha: data.senha
+    }
+
+    const response = await fetch('https://desafio-m03.herokuapp.com/usuarios', {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify(body)
+    });
+
+    if(response.ok) {
+      history.push('/');
+      return;
     }
   }
 
