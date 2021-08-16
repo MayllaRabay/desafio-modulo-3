@@ -1,12 +1,13 @@
-import { Button, Card, TextField, Typography } from '@material-ui/core';
+import { Backdrop, Button, Card, CircularProgress, Snackbar, TextField, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { Alert } from '@material-ui/lab';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import PasswordInput from '../../components/PasswordInput/index';
 import styles from './styles.module.scss';
 
-const useStyles = makeStyles({
+const useStyles = makeStyles((theme) => ({
   card: {
     background: 'var(--color-white)',
     borderRadius: 16,
@@ -40,13 +41,20 @@ const useStyles = makeStyles({
     '& a': {
       color: 'var(--color-blue)'
     }
+  },
+
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: 'var(---color-white)'
   }
-});
+}));
 
 function Register() {
-  const { register, handleSubmit, watch, formState: { errors }, setError } = useForm();
+  const { register, handleSubmit, formState: { errors }, setError } = useForm();
   const materialStyles = useStyles();
   const history = useHistory();
+  const [loading, setLoading] = useState(false);
+  const [requestError, setRequestError] = useState('');
 
   async function registerUser(data) {
     if(data.senha !== data.repita_senha) {
@@ -62,6 +70,9 @@ function Register() {
       senha: data.senha
     }
 
+    setRequestError('');
+    setLoading(true);
+
     const response = await fetch('https://desafio-m03.herokuapp.com/usuarios', {
       method: 'POST',
       headers: {
@@ -70,10 +81,20 @@ function Register() {
       body: JSON.stringify(body)
     });
 
+    setLoading(false);
+
     if(response.ok) {
       history.push('/');
       return;
     }
+
+    const requestData = await response.json();
+
+    setRequestError(requestData);
+  }
+
+  function handleAlertClose() {
+    setRequestError('');
   }
 
   return (
@@ -112,12 +133,24 @@ function Register() {
           register={() => register("repita_senha", { required: true })}
           error={!!errors.repita_senha}
         />
+
+        <Snackbar className={materialStyles.snackbar} open={!!requestError} autoHideDuration={6000} onClose={handleAlertClose}>
+          <Alert severity='error'>
+            {requestError}
+          </Alert>
+        </Snackbar>
+
         <Button type="submit" className={materialStyles.button} variant="contained">
           Criar Conta
         </Button>
+        
         <Typography className={materialStyles.footer}>
           Já possui uma conta? <a href='/'>ACESSE</a>
         </Typography>
+
+        <Backdrop className={materialStyles.backdrop} open={loading}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
       </Card>
     </form>
   );
