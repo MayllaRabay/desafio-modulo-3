@@ -73,8 +73,11 @@ function Register() {
     setRequestError('');
     setLoading(true);
 
-    const response = await fetch('https://desafio-m03.herokuapp.com/usuarios', {
+    const response = await fetch('http://localhost:3003/cadastro', {
       method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      credentials: 'same-origin',
       headers: {
         'Content-type': 'application/json',
       },
@@ -84,6 +87,7 @@ function Register() {
     setLoading(false);
 
     if(response.ok) {
+      console.log('Conta cadastrada com sucesso! ' + response.json())
       history.push('/');
       return;
     }
